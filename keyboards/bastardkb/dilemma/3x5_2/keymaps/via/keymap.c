@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "quantum.h"
 
 #ifdef DILEMMA_AUTO_POINTER_LAYER_TRIGGER_ENABLE
 #    include "timer.h"
@@ -28,7 +29,11 @@ enum dilemma_keymap_layers {
     LAYER_NUMERAL,
     LAYER_SYMBOLS,
 };
-
+// define tap dances
+enum {
+	TD_ESC = 0,
+	TD_COLN,
+};
 // Automatically enable sniping-mode on the pointer layer.
 #define DILEMMA_AUTO_SNIPING_ON_LAYER LAYER_POINTER
 
@@ -60,11 +65,12 @@ static uint16_t auto_pointer_layer_timer = 0;
 // clang-format off
 /** \brief QWERTY layout (3 rows, 10 columns). */
 #define LAYOUT_LAYER_BASE                                                                     \
-       KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_O, \
+	KC_Q, TD(TD_ESC),    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,  KC_P, \
        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L, KC_QUOT, \
-       KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, \
+       KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M, KC_COMM,  KC_DOT, TD(TD_COLN), \
                                TAB_FUN, SPC_NAV, ENT_SYM, BSP_NUM
 
+// lala
 /** Convenience row shorthands. */
 #define _______________DEAD_HALF_ROW_______________ XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
 #define ______________HOME_ROW_GACS_L______________ KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX
@@ -87,19 +93,24 @@ static uint16_t auto_pointer_layer_timer = 0;
  * primary layer with extras on the pinkie column, plus system keys on the inner
  * column. App is on the tertiary thumb key and other thumb keys are duplicated
  * from the base layer to enable auto-repeat.
- */
 #define LAYOUT_LAYER_FUNCTION                                                                 \
     _______________DEAD_HALF_ROW_______________, KC_PSCR,   KC_F7,   KC_F8,   KC_F9,  KC_F12, \
     ______________HOME_ROW_GACS_L______________, KC_SCRL,   KC_F4,   KC_F5,   KC_F6,  KC_F11, \
     _______________DEAD_HALF_ROW_______________, KC_PAUS,   KC_F1,   KC_F2,   KC_F3,  KC_F10, \
                                _______, XXXXXXX, XXXXXXX, XXXXXXX
+ */
+#define LAYOUT_LAYER_FUNCTION                                                                 \
+    _______________DEAD_HALF_ROW_______________, KC_ASTR,   KC_LPRN,   KC_RPRN,   KC_PERC,  KC_GRV, \
+    ______________HOME_ROW_GACS_L______________, KC_EXLM,   KC_LBRC,   KC_RBRC,   KC_AMPR,  KC_BSLS, \
+    _______________DEAD_HALF_ROW_______________, KC_AT,   KC_HASH,   KC_DLR,   KC_CIRC,  KC_SCLN, \
+                               _______, XXXXXXX, KC_MINS, KC_EQL
 
 /** \brief Mouse emulation and pointer functions. */
 #define LAYOUT_LAYER_POINTER                                                                  \
     QK_BOOT, XXXXXXX, XXXXXXX, DPI_MOD, S_D_MOD, S_D_MOD, DPI_MOD, XXXXXXX, XXXXXXX, QK_BOOT, \
     ______________HOME_ROW_GACS_L______________, ______________HOME_ROW_GACS_R______________, \
     _______, DRGSCRL, SNIPING, KC_BTN3, XXXXXXX, XXXXXXX, KC_BTN3, SNIPING, DRGSCRL, _______, \
-                               KC_BTN2, KC_BTN1, KC_BTN1, KC_BTN2
+                               KC_BTN1, KC_BTN2, KC_BTN1, KC_BTN2
 
 /**
  * \brief Navigation layer.
@@ -110,10 +121,10 @@ static uint16_t auto_pointer_layer_timer = 0;
  * base layer to avoid having to layer change mid edit and to enable auto-repeat.
  */
 #define LAYOUT_LAYER_NAVIGATION                                                               \
-    _______________DEAD_HALF_ROW_______________, _______________DEAD_HALF_ROW_______________, \
-    ______________HOME_ROW_GACS_L______________, KC_CAPS, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, \
-    _______________DEAD_HALF_ROW_______________,  KC_INS, KC_HOME, KC_PGDN, KC_PGUP,  KC_END, \
-                               XXXXXXX, _______,  KC_ENT, KC_BSPC
+    _______________DEAD_HALF_ROW_______________, QK_REBOOT , QK_BOOT, QK_CLEAR_EEPROM, XXXXXXX, XXXXXXX ,\
+    ______________HOME_ROW_GACS_L______________, KC_LEFT, KC_DOWN,  KC_UP, KC_RGHT, KC_ESC, \
+    _______________DEAD_HALF_ROW_______________, KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_INS, \
+                               XXXXXXX, _______,  KC_ENT, KC_DEL
 
 /**
  * \brief Numeral layout.
@@ -139,8 +150,7 @@ static uint16_t auto_pointer_layer_timer = 0;
     KC_LCBR, KC_AMPR, KC_ASTR, KC_LPRN, KC_RCBR, _______________DEAD_HALF_ROW_______________, \
     KC_COLN,  KC_DLR, KC_PERC, KC_CIRC, KC_PLUS, ______________HOME_ROW_GACS_R______________, \
     KC_TILD, KC_EXLM,   KC_AT, KC_HASH, KC_PIPE, _______________DEAD_HALF_ROW_______________, \
-                                KC_GRV, KC_UNDS, _______, XXXXXXX
-
+                                KC_UNDS, KC_UNDS, _______, XXXXXXX
 /**
  * \brief Add Home Row mod to a layout.
  *
@@ -182,7 +192,7 @@ static uint16_t auto_pointer_layer_timer = 0;
              L10,         L11,         L12,         L13,         L14,  \
              R15,         R16,         R17,         R18,         R19,  \
       _L_PTR(L20),        L21,         L22,         L23,         L24,  \
-             R25,         R26,         R27,         R28,  _L_PTR(R29), \
+             R25,         R26,         R27,         R28, R29, \
       __VA_ARGS__
 #define POINTER_MOD(...) _POINTER_MOD(__VA_ARGS__)
 
@@ -198,6 +208,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [LAYER_POINTER] = LAYOUT_wrapper(LAYOUT_LAYER_POINTER),
   [LAYER_SYMBOLS] = LAYOUT_wrapper(LAYOUT_LAYER_SYMBOLS),
 };
+
+//
+tap_dance_action_t tap_dance_actions[] = { 
+  [TD_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_W, KC_ESC),
+  [TD_COLN] = ACTION_TAP_DANCE_DOUBLE(KC_SLSH, KC_COLN)
+};
+
 // clang-format on
 
 #ifdef POINTING_DEVICE_ENABLE
@@ -227,3 +244,4 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 #    endif // DILEMMA_AUTO_SNIPING_ON_LAYER
 #endif     // POINTING_DEVICE_ENABLE
+	   //
