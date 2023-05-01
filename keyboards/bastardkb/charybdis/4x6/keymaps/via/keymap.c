@@ -99,7 +99,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ╭──────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
        TO(0), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TO(0),
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       RGB_MOD, XXXXXXX, KC_7,    KC_8,    KC_9,  XXXXXXX,      KC_RBRC, S(KC_0), S(KC_9), KC_LBRC , KC_BSLS, KC_EQUAL,
+       RGB_MOD, XXXXXXX, KC_7,    KC_8,    KC_9,  XXXXXXX,      KC_LBRC, S(KC_0), S(KC_9), KC_RBRC , KC_BSLS, KC_EQUAL,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        RGB_TOG, XXXXXXX, KC_4,    KC_5,    KC_6,  XXXXXXX,       KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, KC_PEQL, KC_CAPS,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
@@ -114,7 +114,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ╭──────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
        KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,    KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       RGB_MOD, XXXXXXX, KC_MINS, S(KC_EQUAL), KC_EQUAL, XXXXXXX,  KC_RBRC, S(KC_9), S(KC_0), KC_LBRC, KC_BSLS, KC_EQUAL,
+       RGB_MOD, XXXXXXX, KC_MINS, S(KC_EQUAL), KC_EQUAL, XXXXXXX,  KC_LBRC, S(KC_9), S(KC_0), KC_RBRC, KC_BSLS, KC_EQUAL,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        RGB_TOG, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX,    KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, KC_PEQL, KC_CAPS,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
